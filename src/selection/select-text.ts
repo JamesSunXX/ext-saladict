@@ -31,6 +31,7 @@ import {
 import { checkSupportedLangs } from '@/_helpers/lang-check'
 import { Message } from '@/typings/message'
 import { isTypeField, newSelectionWord } from './helper'
+import { isTagName } from '@/_helpers/dom'
 
 export function createSelectTextStream(config: AppConfig | null) {
   if (!config) {
@@ -113,6 +114,10 @@ function withTouchMode(config: AppConfig) {
         }
       }
 
+      if (selection.rangeCount <= 0) {
+        return { self }
+      }
+
       const rect = selection.getRangeAt(0).getBoundingClientRect()
 
       if (
@@ -121,7 +126,7 @@ function withTouchMode(config: AppConfig) {
         rect.width === 0 &&
         rect.height === 0
       ) {
-        // Selection is made inside textarea with keyborad. Ignore.
+        // Selection is made inside textarea with keyboard. Ignore.
         return { self }
       }
 
@@ -139,7 +144,7 @@ function withTouchMode(config: AppConfig) {
     throttle(result => {
       // Firefox will fire an extra selectionchange event
       // when selection is made inside dict panel and
-      // continute search is triggered.
+      // continue search is triggered.
       // Need to skip this event otherwise the panel is
       // closed unexpectedly.
       if (isFirefox && result.self && result.word && result.word.text) {
@@ -265,7 +270,7 @@ export function useInPanelSelect(
           el;
           el = el.parentElement
         ) {
-          if (el.tagName === 'A' || el.tagName === 'BUTTON') {
+          if (isTagName(el, 'a') || isTagName(el, 'button')) {
             return false
           }
         }
